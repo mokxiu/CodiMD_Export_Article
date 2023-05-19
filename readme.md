@@ -1,4 +1,14 @@
 ## 使用方式
-配置邮箱、密码信息
+
+配置 host 、email、password 信息
+
 运行脚本
-注意不要有重名的文章，不然会被覆盖
+
+### 注意
+不要有重名的文章，否则会被覆盖。
+
+Usag:
+```python
+python3 CodiMD_Export_Article.py
+```
+
