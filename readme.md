@@ -8,7 +8,7 @@
 不要有重名的文章，否则会被覆盖。
 
 Usag:
-```python
+```bash
 python3 CodiMD_Export_Article.py
 ```
 
