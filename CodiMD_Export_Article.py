@@ -15,10 +15,10 @@ import os
 
 session = requests.Session()
 
-# host 后面需要加一个 / ,如：http://127.0.0.0/
-host = "http://10.108.0.52:56882/"
-email = "zt@cp.com"
-password = "123qwe..."
+# host 后面需要加一个 / ,如：http://127.0.0.1/
+host = "http://127.0.0.1/"
+email = "xxx"
+password = "xxx"
 
 
 class Codimd():
