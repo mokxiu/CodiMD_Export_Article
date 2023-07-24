@@ -27,6 +27,7 @@ class Codimd():
         self.host = host
         self.email = email
         self.password = password
+        self.allnum = 1
         self.dirname = "downloads_" + time.strftime("%Y年%m月%d日", time.localtime())
         if os.path.exists(f'{self.dirname}') == False:
             os.mkdir(f'./{self.dirname}')
@@ -197,7 +198,7 @@ if __name__ == '__main__':
     mm.login()
     mm.object()
 
-    key = str(input("导出全部文档还是指定文档？请输入序号数字\n1.导出全部\n2.导出指定，请输入url\n:"))
+    key = str(input("导出全部文档还是指定文档？请输入序号数字\n1.导出全部\n2.导出指定\n:"))
     if key == "1":
         links = mm.find_all()
         print(f'共 {len(links)} 个项目')
@@ -208,6 +209,7 @@ if __name__ == '__main__':
         link_url = input('请输入完整URL：')
         index = link_url.rfind('/') + 1
         link = link_url[index:]
+        # print(link)
         links.append(link)
         mm.export(links)
         print("全部内容导出成功，程序结束！")
