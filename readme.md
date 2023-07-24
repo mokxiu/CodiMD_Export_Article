@@ -11,4 +11,6 @@ Usag:
 ```bash
 python3 CodiMD_Export_Article.py
 ```
-
+### 更新日志
+2023年7月24日 
+    - 修复了小bug

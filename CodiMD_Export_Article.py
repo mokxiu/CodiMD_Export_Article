@@ -15,11 +15,10 @@ import os
 
 session = requests.Session()
 
-# host 后面需要加一个 / ,如：http://127.0.0.1/
-host = "http://127.0.0.1/"
-email = "xxx"
-password = "xxx"
-
+# host 后面需要加一个 / ,如：http://127.0.0.0/
+host = "http://10.108.0.52:56882/"
+email = "zt@cp.com"
+password = "123qwe..."
 
 class Codimd():
     def __init__(self, host, email, password):
@@ -28,20 +27,22 @@ class Codimd():
         self.host = host
         self.email = email
         self.password = password
+        self.dirname = "downloads_" + time.strftime("%Y年%m月%d日", time.localtime())
+        if os.path.exists(f'{self.dirname}') == False:
+            os.mkdir(f'./{self.dirname}')
         self.heareds = {
             "Content-Length": "36",
             "Cache-Control": "max-age=0",
-            "DNT": "1",
             "Upgrade-Insecure-Requests": "1",
             "Content-Type": "application/x-www-form-urlencoded",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Referer": host,
             "Accept-Encoding": "gzip, deflate",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7",
-            "Cookie": "connect.sid=s%3A7leM07AimNozqgM-CMOW7aaEO6D1B8BP.mqpI9QtHrpePEM5wCvRrD4FefBZFeNceaO7RwNvQy8E; loginstate=true; userid=ebe80950-73a8-43bf-8bc7-ca82c1576780; indent_type=space; space_units=4; keymap=sublime; io=p5kFV2GzbREi2NHDAAQw",
+            "Accept-Language": "zh-CN,zh;q=0.9",
             "Connection": "close",
+
         }
-        self.object()
 
     # 请求页面
     def spider(self, mode, url, data='', retry=0):
@@ -107,12 +108,14 @@ class Codimd():
         res = self.spider('get', url)
 
         if '["info",{"code":403}]' in res.text:
+            self.num += 1
             print('----------------------')
-            print(f'{self.object_dic[link]} 项目导出失败,请检查是否有权限')
+            print(f'第 {self.num} 个项目 {self.object_dic[link]} 导出失败,请检查是否有权限')
             return None, None
         elif '["info",{"code":404}]' in res.text:
+            self.num += 1
             print('----------------------')
-            print(f'{self.object_dic[link]} 项目不存在')
+            print(f'第 {self.num} 个项目 {self.object_dic[link]} 不存在')
             return None, None
         elif res.text == '2:40':
             # 有时会出现导出失败的情况，等待3秒后重试
@@ -145,25 +148,25 @@ class Codimd():
         filename = dirname + '.md'
 
         # 创建项目主文件夹
-        if os.path.exists(f'./downloads/{dirname}') == False:
-            os.mkdir(f'./downloads/{dirname}')
-        with open(f'./downloads/{dirname}/' + filename, mode='w+', encoding='utf-8') as f:
+        if os.path.exists(f'./{self.dirname}/{dirname}') == False:
+            os.mkdir(f'./{self.dirname}/{dirname}')
+        with open(f'./{self.dirname}/{dirname}/' + filename, mode='w+', encoding='utf-8') as f:
             f.write(document)
         print('----------------------')
         self.num += 1
-        print(f'正在导出第 {self.num} 个项目 {filename} ')
+        print(f'共 {self.allnum} 个项目，正在导出第 {self.num} 个项目 {filename} ')
         return dirname, pics
 
     # 导出图片
     def export_pic(self, dirname, pics):
         # 创建图片文件夹
-        if os.path.exists(f'./downloads/{dirname}/uploads') == False:
-            os.mkdir(f'./downloads/{dirname}/uploads')
+        if os.path.exists(f'./{self.dirname}/{dirname}/uploads') == False:
+            os.mkdir(f'./{self.dirname}/{dirname}/uploads')
         for pic in pics:
             url = self.host + pic
             res = self.spider('get', url)
             pic_name = os.path.basename(pic)
-            with open(f'./downloads/{dirname}/uploads/{pic_name}', 'wb') as f:
+            with open(f'./{self.dirname}/{dirname}/uploads/{pic_name}', 'wb') as f:
                 f.write(res.content)
             # print(f'{pic_name} 图片保存成功。')
 
@@ -183,6 +186,7 @@ class Codimd():
             # 按时间顺序
             links.append(k)
             # links.insert(0,k)
+        self.allnum = len(links)
         return links
 
 
@@ -191,9 +195,7 @@ if __name__ == '__main__':
     # 登录
     mm = Codimd(host, email, password)
     mm.login()
-
-    if os.path.exists('downloads') == False:
-        os.mkdir('./downloads')
+    mm.object()
 
     key = str(input("导出全部文档还是指定文档？请输入序号数字\n1.导出全部\n2.导出指定，请输入url\n:"))
     if key == "1":
