@@ -16,9 +16,9 @@ import os
 session = requests.Session()
 
 # host 后面需要加一个 / ,如：http://127.0.0.0/
-host = "http://10.108.0.52:56882/"
-email = "zt@cp.com"
-password = "123qwe..."
+host = "http://127.0.0.0/"
+email = "xxx"
+password = "xxx"
 
 class Codimd():
     def __init__(self, host, email, password):
